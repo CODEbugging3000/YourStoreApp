@@ -1,0 +1,3 @@
+class Cliente:
+    """Objeto Cliente"""
+
