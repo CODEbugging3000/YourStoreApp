@@ -1,8 +1,8 @@
 class Estoque():
     """Objeto para o Estoque"""
-    def __init__(self, produto):
-        #Produto deve ser um dictionary com chave = codigo_do_produto e valor = obj do tipo produto
-        self._produto = produto
+    def __init__(self, produtos):
+        #Produto deve ser um dicionário com chave = codigo_do_produto e valor = obj do tipo produto
+        self.produtos = produtos
 
     def adicionar_produto(self, produto): # adiciona um produto ao Estoque
         pass

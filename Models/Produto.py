@@ -1,10 +1,10 @@
 class Produto:
     def __init__(self, codigo, nome, categoria, preco, estoque):
-        codigo = self.codigo
-        nome = self.nome
-        categoria = self.categoria
-        preco = self.preco
-        estoque = self.estoque
+        self.codigo = codigo
+        self.nome = nome
+        self.categoria = categoria
+        self.preco = preco
+        self.estoque = estoque
     def atualizar_estoque(quantidade):
         #Atualizar o atributo produtos: (dictionary) da classe Estoque
         pass

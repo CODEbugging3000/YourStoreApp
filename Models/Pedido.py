@@ -1,6 +1,6 @@
 class Pedido():
 
-    """Objeto de pedido do Cliente"""
+    """Objeto de pedido para o fornecedor"""
 
     def __init__(self, id_pedido, fornecedor, data_pedido, itens_pedido):
         self._id_pedido = id_pedido
@@ -8,7 +8,6 @@ class Pedido():
         self._data_pedido = data_pedido
         self._itens_pedido = itens_pedido # lista de objetos do tipo pedido
     def calcular_valor_pedido(self, itens):
-        """"""
         pass
     def adicionar_item_pedido(self, item):
         pass
