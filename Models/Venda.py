@@ -1,6 +1,3 @@
-from ItemVenda import *
-from Funcionario import *
-
 class Venda:
     def __init__(self, id_venda, cliente, data, itens, valor_total, funcionario_responsavel):
         self.id_venda = id_venda 
@@ -14,6 +11,3 @@ class Venda:
 
     def adicionar_item(self, item): # adiciona novo item a compra
         self.itens.append(item)
-
-vendedor = Funcionario(None, "Joaozinho", "Vendedor", 1999.38)
-

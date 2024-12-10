@@ -6,7 +6,8 @@ class Cliente:
         self.email = email
         self.historico_compras = historico_compras
     def adicionar_compra(self, venda):    # Adicionar uma nova venda
-        pass
+        self.historico_compras.append(venda)
 
     def visualizar_historico(self):    # Printar a lista de historico_compras:
-        pass
+        for venda in self.historico_compras:
+            print(venda)

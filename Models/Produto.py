@@ -1,14 +1,8 @@
 class Produto:
-    def __init__(self, codigo, nome, categoria, preco, estoque):
+    def __init__(self, codigo, nome, categoria, preco, qnt_estoque):
         self.codigo = codigo
         self.nome = nome
         self.categoria = categoria
         self.preco = preco
-        self.estoque = estoque
-    def atualizar_estoque(quantidade):
-        #Atualizar o atributo produtos: (dictionary) da classe Estoque
-        pass
+        self.quantidade_estoque = qnt_estoque
 
-    def aplicar_desconto(porcentagem):
-        #Aplica desconto no preco do produto
-        pass
