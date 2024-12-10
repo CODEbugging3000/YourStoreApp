@@ -1,50 +1,64 @@
 #Imports necessários
 from time import sleep
 from hamcrest import empty
-from Models.BancodeDados import BancodeDados
 from Models.Cliente import Cliente
 from Models.Estoque import Estoque
 from Models.Produto import Produto
 from Models.Venda import Venda
 from Models.Usuario import Usurario
 from Views.TerminalStyle import TerminalStyle
+from Models.BancodeDados import BancodeDados
 
-class SistemaDeGestao(BancodeDados):
+class SistemaDeGestao:
     """Objeto geral do programa"""
     def __init__(self):
+        # Obtém a instância única do banco de dados
+        db = BancodeDados()
+        self.conn = db.conn
+        self.cursor = db.cursor
+        
         self.clientes = [] # lista de objetos
         self.vendas = [] # lista de objetos
-        
-    # Criar tabela usuario
-    BancodeDados.cursor.execute('''
-    CREATE TABLE IF NOT EXISTS usuarios (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        email TEXT NOT NULL,
-        senha TEXT NOT NULL, 
-        nome TEXT NOT NULL,
-        cnpj TEXT NOT NULL
-    )''')
+        # Criar tabelas
+        self._criar_tabelas()
+    def _criar_tabelas(self):
+        """Cria as tabelas necessárias no banco de dados."""
+        self.cursor.execute('''
+        CREATE TABLE IF NOT EXISTS usuarios (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            email TEXT NOT NULL,
+            senha TEXT NOT NULL, 
+            nome TEXT NOT NULL,
+            cnpj TEXT NOT NULL
+        )''')
 
-    #criar tabela clientes
-    BancodeDados.cursor.execute('''
-    CREATE TABLE IF NOT EXISTS clientes (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nome TEXT NOT NULL,
-        telefone TEXT NOT NULL,
-        email TEXT NOT NULL, 
-        historico_compras TEXT NOT NULL
-    )''')
-    
-    BancodeDados.cursor.execute('''
+        self.cursor.execute('''
+        CREATE TABLE IF NOT EXISTS clientes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome TEXT NOT NULL,
+            telefone TEXT NOT NULL,
+            email TEXT NOT NULL, 
+            historico_compras TEXT NOT NULL
+        )''')
+
+        self.cursor.execute('''
         CREATE TABLE IF NOT EXISTS estoque (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             codigo TEXT NOT NULL,
             nome TEXT NOT NULL,
             categoria TEXT NOT NULL,
-            preco INTEGER NOT NULL, 
+            preco REAL NOT NULL, 
             quantidade INTEGER NOT NULL
         )''')
+        print("Tabelas criadas com sucesso!")
+        sleep(1)
+        self.conn.commit()  # Salva alterações no banco
     
+    def fechar(self):
+        """Fecha a conexão com o banco de dados."""
+        db = BancodeDados()  # Obtém a instância existente do banco de dados
+        db.fechar_conexao()  # Chama o método fechar_conexao na instância
+
     # Criar um objeto terminal
     terminal = TerminalStyle()
 
@@ -60,13 +74,16 @@ class SistemaDeGestao(BancodeDados):
             if email_e_senha is None:
                 email_e_senha = self.terminal.loginPage()
             usuario = Usurario(email_e_senha[0], email_e_senha[1])
-            BancodeDados.cursor.execute("SELECT * FROM usuarios WHERE email = ?", (usuario.email,))
-            resultado = BancodeDados.cursor.fetchall()
-            if resultado is empty:
+            self.cursor.execute("SELECT * FROM usuarios WHERE email = ?", (usuario.email,))
+            resultado = self.cursor.fetchall()
+            if resultado == []:
                 print("Email nao cadastrado tente novamente")
+                sleep(1)
                 email_e_senha = None
             elif resultado is not empty and usuario.senha != resultado[0][2]:
                 print("Senha incorreta tente novamente")
+                sleep(1)
+                email_e_senha = None
             else:
                 print("Usuario logado com sucesso!")
                 sleep(1)
@@ -80,12 +97,12 @@ class SistemaDeGestao(BancodeDados):
             user = Usurario(dados[0], dados[1], dados[2], dados[3])
 
             # Verificar se o email ja foi cadastrado
-            BancodeDados.cursor.execute("SELECT * FROM usuarios WHERE email = ?", (user.email,))
-            resultado = BancodeDados.cursor.fetchall() # retorna uma lista de tuplas do SELECT
+            self.cursor.execute("SELECT * FROM usuarios WHERE email = ?", (user.email,))
+            resultado = self.cursor.fetchall() # retorna uma lista de tuplas do SELECT
             if resultado == []:
-                BancodeDados.cursor.execute("INSERT INTO usuarios (email, senha, nome, cnpj) VALUES (?, ?, ?, ?)", 
+                self.cursor.execute("INSERT INTO usuarios (email, senha, nome, cnpj) VALUES (?, ?, ?, ?)", 
                                     (user.email, user.senha, user.nome, user.cnpj))
-                BancodeDados.conn.commit()  # Salvar alterações
+                self.conn.commit()  # Salvar alterações
                 print("Cadastro realizado com sucesso!")
                 sleep(1)
                 cadastrou = True
@@ -107,18 +124,22 @@ class SistemaDeGestao(BancodeDados):
                     elif op_logado == "2": # Realizar uma venda
                         pass
                     elif op_logado == "3": # Gerenciar estoque
-                        self.Estoque = Estoque()
+                        estoque = Estoque()
                         while True: # loop estoque
                             op_estoque = self.terminal.estoque()
                             if op_estoque == "1": # Listar produtos
-                                self.Estoque.listar_produtos()
+                                estoque.listar_produtos()
                             elif op_estoque == "2": # Adicionar produtos
-                                self.post = self.terminal.cadastro_produto()
-                                self.Estoque.adicionar_produto(Produto(self.post[0], self.post[1], self.post[2], self.post[3], self.post[4]))
+                                post = self.terminal.cadastro_produto()
+                                estoque.adicionar_produto(Produto(post[0], post[1], post[2], post[3], post[4]))
                             elif op_estoque == "3": # Remover produtos
-                                pass
+                                codigo = self.terminal.remover_produto()
+                                estoque.remover_produto(codigo)
+                                print("Produto removido com sucesso!")
+                                sleep(1)
                             elif op_estoque == "4": # Consultar produtos
-                                pass
+                                codigo = self.terminal.consultar_produto()
+                                estoque.consultar_produto(codigo)
                             elif op_estoque == "5": # Voltar
                                 break
                     elif op_logado == "4": # Logout
@@ -126,7 +147,7 @@ class SistemaDeGestao(BancodeDados):
             elif op == "2": # Cadastro
                 self.cadastro()
             elif op == "3": # Sair
-                BancodeDados.conn.close() # Fecha Banco de Dados
+                self.fechar() # Fecha Banco de Dados
                 break
             else:
                 print("Opcao invalida")

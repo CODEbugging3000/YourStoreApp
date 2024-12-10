@@ -47,14 +47,15 @@ class TerminalStyle:
     def estoque(self):
         os.system('clear')
         print(self.frufru1,"Estoque", self.frufru1)
-        print("1 - Listar produtos")
+        print("1 - Listar todos osprodutos")
         print("2 - Adicionar produtos")
         print("3 - Remover produtos")
-        print("4 - Consultar produtos")
+        print("4 - Consultar produto")
         print("5 - Voltar")
         op = input("Opcao: ")
         os.system('clear')
         return op
+    
     def cadastro_produto(self):
         os.system('clear')
         print(self.frufru1,"Cadastro de produtos", self.frufru1)
@@ -65,3 +66,17 @@ class TerminalStyle:
         estoque = input("Digite a quantidade em estoque: ")
         os.system('clear')
         return [codigo, nome, categoria, preco, estoque]
+    def remover_produto(self):
+        """ Recebe do terminal o codigo do produto a ser removido do estoque"""
+        os.system('clear')
+        print(self.frufru1,"Remover produto", self.frufru1)
+        codigo = input("Digite o codigo do produto: ")
+        os.system('clear')
+        return codigo
+    
+    def consultar_produto(self):
+        os.system('clear')
+        print(self.frufru1,"Consultar produto", self.frufru1)
+        codigo = input("Digite o codigo do produto: ")
+        os.system('clear')
+        return codigo
