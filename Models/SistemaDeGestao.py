@@ -16,11 +16,13 @@ class SistemaDeGestao:
         db = BancodeDados()
         self.conn = db.conn
         self.cursor = db.cursor
-        
+        self.cursor.execute("PRAGMA foreign_keys = ON") # Habilita as chaves estrangeiras
         self.clientes = [] # lista de objetos
-        self.vendas = [] # lista de objetos
         # Criar tabelas
         self._criar_tabelas()
+    # Criar um objeto terminal
+    terminal = TerminalStyle()
+
     def _criar_tabelas(self):
         """Cria as tabelas necessárias no banco de dados."""
         self.cursor.execute('''
@@ -50,23 +52,22 @@ class SistemaDeGestao:
             preco REAL NOT NULL, 
             quantidade INTEGER NOT NULL
         )''')
-        print("Tabelas criadas com sucesso!")
-        sleep(1)
+
+        self.cursor.execute('''
+        CREATE TABLE IF NOT EXISTS vendas (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id_cliente INTEGER NOT NULL REFERENCES clientes(id),
+            cliente TEXT NOT NULL,
+            data TEXT NOT NULL,
+            item TEXT NOT NULL,
+            total REAL NOT NULL
+        )''')
         self.conn.commit()  # Salva alterações no banco
     
     def fechar(self):
         """Fecha a conexão com o banco de dados."""
         db = BancodeDados()  # Obtém a instância existente do banco de dados
         db.fechar_conexao()  # Chama o método fechar_conexao na instância
-
-    # Criar um objeto terminal
-    terminal = TerminalStyle()
-
-    def adicionar_cliente(self, cliente): # adiciona um cliente no sistema
-        self.clientes.append(cliente)
-
-    def historico_de_vendas(self, venda): #processa uma venda
-        self.vendas.append(venda)
 
     def loginverify(self, email_e_senha=None):
         logado = False
@@ -111,7 +112,9 @@ class SistemaDeGestao:
                 dados = None
                 sleep(1)
     
-
+    def adicionar_cliente(self, cliente): # adiciona um cliente no sistema
+        dados_do_cliente = self.terminal.cadastro_de_cliente()
+        return dados_do_cliente
     def run(self): #loop do sistema
         while True:
             op = self.terminal.apresentacao_inicial()
@@ -122,7 +125,15 @@ class SistemaDeGestao:
                     if op_logado == "1": # Adicionar um novo cliente
                         pass
                     elif op_logado == "2": # Realizar uma venda
-                        pass
+                        dados_da_venda = self.terminal.venda()
+                        estoque = Estoque()
+                        tem_no_estoque = estoque.verificar_estoque(dados_da_venda[1])
+                        if tem_no_estoque:
+                            tem_o_suficiente = estoque.atualizar_estoque(dados_da_venda[1], dados_da_venda[2])
+                            if tem_o_suficiente:
+                                venda = Venda(dados_da_venda[0], dados_da_venda[1], dados_da_venda[2])
+                                venda.realizar_venda()
+                                self.terminal.pos_venda(venda.calcular_valor_total())
                     elif op_logado == "3": # Gerenciar estoque
                         estoque = Estoque()
                         while True: # loop estoque
@@ -135,8 +146,7 @@ class SistemaDeGestao:
                             elif op_estoque == "3": # Remover produtos
                                 codigo = self.terminal.remover_produto()
                                 estoque.remover_produto(codigo)
-                                print("Produto removido com sucesso!")
-                                sleep(1)
+
                             elif op_estoque == "4": # Consultar produtos
                                 codigo = self.terminal.consultar_produto()
                                 estoque.consultar_produto(codigo)
@@ -153,3 +163,4 @@ class SistemaDeGestao:
                 print("Opcao invalida")
                 sleep(1)
                 pass
+    
