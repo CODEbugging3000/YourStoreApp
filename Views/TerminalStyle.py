@@ -41,10 +41,9 @@ class TerminalStyle:
         self.clear()
         print(self.frufru1,"Bem-vindo ao Sistema de Gestão de Vendas YourStoreApp", self.frufru1)
         print("Escolha uma opcao: ")
-        print("1 - Adicionar um novo cliente")
-        print("2 - Realizar uma venda")
-        print("3 - gerenciar estoque")
-        print("4 - Logout")
+        print("1 - Realizar uma venda")
+        print("2 - gerenciar estoque")
+        print("3 - Logout")
         op = input("Opcao: ")
         self.clear()
         return op
@@ -85,6 +84,7 @@ class TerminalStyle:
         codigo = input("Digite o codigo do produto: ")
         self.clear()
         return codigo
+    
     def venda(self):
         self.clear()
         print(self.frufru1,"Realizar venda", self.frufru1)
@@ -93,11 +93,13 @@ class TerminalStyle:
         quantidade = input("digite a quantidade vendida: ")
         self.clear()
         return [id_cliente, codigo, quantidade]
+    
     def pos_venda(self, total):
         self.clear()
         print(f"Venda de {total} realizada com sucesso!")
-        sleep(1)
+        sleep(2.5)
         self.clear()
+
     def cadastro_de_cliente(self):
         self.clear()
         print(self.frufru1,"Cadastro de clientes", self.frufru1)

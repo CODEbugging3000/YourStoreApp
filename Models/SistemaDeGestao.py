@@ -1,7 +1,6 @@
 #Imports necessários
 from time import sleep
 from hamcrest import empty
-from Models.Cliente import Cliente
 from Models.Estoque import Estoque
 from Models.Produto import Produto
 from Models.Venda import Venda
@@ -39,8 +38,7 @@ class SistemaDeGestao:
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nome TEXT NOT NULL,
             telefone TEXT NOT NULL,
-            email TEXT NOT NULL, 
-            historico_compras TEXT NOT NULL
+            email TEXT NOT NULL
         )''')
 
         self.cursor.execute('''
@@ -112,9 +110,7 @@ class SistemaDeGestao:
                 dados = None
                 sleep(1)
     
-    def adicionar_cliente(self, cliente): # adiciona um cliente no sistema
-        dados_do_cliente = self.terminal.cadastro_de_cliente()
-        return dados_do_cliente
+
     def run(self): #loop do sistema
         while True:
             op = self.terminal.apresentacao_inicial()
@@ -122,9 +118,7 @@ class SistemaDeGestao:
                 self.loginverify()
                 while True:
                     op_logado = self.terminal.loggedinPage()
-                    if op_logado == "1": # Adicionar um novo cliente
-                        pass
-                    elif op_logado == "2": # Realizar uma venda
+                    if op_logado == "1": # Realizar uma venda
                         dados_da_venda = self.terminal.venda()
                         estoque = Estoque()
                         tem_no_estoque = estoque.verificar_estoque(dados_da_venda[1])
@@ -134,7 +128,7 @@ class SistemaDeGestao:
                                 venda = Venda(dados_da_venda[0], dados_da_venda[1], dados_da_venda[2])
                                 venda.realizar_venda()
                                 self.terminal.pos_venda(venda.calcular_valor_total())
-                    elif op_logado == "3": # Gerenciar estoque
+                    elif op_logado == "2": # Gerenciar estoque
                         estoque = Estoque()
                         while True: # loop estoque
                             op_estoque = self.terminal.estoque()
@@ -152,7 +146,7 @@ class SistemaDeGestao:
                                 estoque.consultar_produto(codigo)
                             elif op_estoque == "5": # Voltar
                                 break
-                    elif op_logado == "4": # Logout
+                    elif op_logado == "3": # Logout
                         break
             elif op == "2": # Cadastro
                 self.cadastro()
@@ -162,5 +156,5 @@ class SistemaDeGestao:
             else:
                 print("Opcao invalida")
                 sleep(1)
-                pass
+                
     
