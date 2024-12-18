@@ -9,9 +9,6 @@ class Cliente:
         self.conn = db.conn
         self.cursor = db.cursor
 
-    def adicionar_compra(self, venda):    # Adicionar uma nova venda
-        self.historico_compras.append(venda)
-
     def cadastrar_cliente(self, nome, telefone, email):
         self.cursor.execute("INSERT INTO clientes (nome, telefone, email) VALUES (?, ?, ?)", (nome, telefone, email))
         self.conn.commit()

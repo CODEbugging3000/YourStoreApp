@@ -4,7 +4,7 @@ from hamcrest import empty
 from Models.Estoque import Estoque
 from Models.Produto import Produto
 from Models.Venda import Venda
-from Models.Usuario import Usurario
+from Models.Usuario import Usuario
 from Views.TerminalStyle import TerminalStyle
 from Models.BancodeDados import BancodeDados
 
@@ -16,7 +16,7 @@ class SistemaDeGestao:
         self.conn = db.conn
         self.cursor = db.cursor
         self.cursor.execute("PRAGMA foreign_keys = ON") # Habilita as chaves estrangeiras
-        self.clientes = [] # lista de objetos
+
         # Criar tabelas
         self._criar_tabelas()
     # Criar um objeto terminal
@@ -72,7 +72,7 @@ class SistemaDeGestao:
         while not logado:
             if email_e_senha is None:
                 email_e_senha = self.terminal.loginPage()
-            usuario = Usurario(email_e_senha[0], email_e_senha[1])
+            usuario = Usuario(email_e_senha[0], email_e_senha[1])
             self.cursor.execute("SELECT * FROM usuarios WHERE email = ?", (usuario.email,))
             resultado = self.cursor.fetchall()
             if resultado == []:
@@ -93,7 +93,7 @@ class SistemaDeGestao:
         while not cadastrou:
             if dados is None:
                 dados = self.terminal.RegisterPage()
-            user = Usurario(dados[0], dados[1], dados[2], dados[3])
+            user = Usuario(dados[0], dados[1], dados[2], dados[3])
 
             # Verificar se o email ja foi cadastrado
             self.cursor.execute("SELECT * FROM usuarios WHERE email = ?", (user.email,))
