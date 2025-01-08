@@ -6,7 +6,7 @@ from time import sleep
 class Venda:
     def __init__(self, cliente, codigo_do_item, quantidade_do_item):
         super().__init__()
-        self.cliente = cliente # Objeto Cliente
+        self.cliente = cliente
         self.codigo_do_item = codigo_do_item # lista de objetos de ItemVenda
         self.qnt_do_item = quantidade_do_item
         self.data = datetime.datetime.now()
